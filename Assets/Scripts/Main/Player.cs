@@ -7,28 +7,32 @@ public class Player : MonoBehaviour
     [SerializeField] private Sprite _squareSprite;
     [SerializeField] private Sprite _circleSprite;
     [SerializeField] private Sprite _triangleSprite;
+    [SerializeField] private Color _squareColor;
+    [SerializeField] private Color _circleColor;
+    [SerializeField] private Color _triangleColor;
+    [SerializeField] private Sprite _currentSprite;
+    [SerializeField] Collider2D _currentCollider;
+    private Color _currentColor;
     [SerializeField] private float _jumpSpeed;
     [SerializeField] private GameObject _goalPost;
     private BoxCollider2D _squareCollider;
     private CircleCollider2D _circleCollider;
     private PolygonCollider2D _triangleCollider;
-    private Sprite _currentSprite;
     private Rigidbody2D _rigid;
     private SpriteRenderer _spriteRenderer;
-    private Collider2D _currentCollider;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     void Start()
     {
         _rigid = GetComponent<Rigidbody2D>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
-        _currentSprite = _squareSprite;
         _squareCollider = GetComponent<BoxCollider2D>();
         _circleCollider = GetComponent<CircleCollider2D>();
         _triangleCollider = GetComponent<PolygonCollider2D>();
-        _currentCollider = _squareCollider;
+        _currentColor = _spriteRenderer.color;
+        _spriteRenderer.sprite = _currentSprite;
+        _currentCollider.enabled = true;
     }
 
-    // Update is called once per frame
     void Update()
     {
         IsPlayerOutOfBounds();
@@ -37,13 +41,13 @@ public class Player : MonoBehaviour
     public void ChangeCircle(InputAction.CallbackContext context)
     {
         if (!context.performed) return;
-        _ChangeShape(_circleSprite, _circleCollider);
+        _ChangeShape(_circleSprite, _circleCollider, _circleColor);
     }
 
     public void ChangeSquare(InputAction.CallbackContext context)
     {
         if (!context.performed) return;
-        _ChangeShape(_squareSprite, _squareCollider);
+        _ChangeShape(_squareSprite, _squareCollider, _squareColor);
     }
 
     public void ChangeTriangle(InputAction.CallbackContext context)
@@ -53,10 +57,10 @@ public class Player : MonoBehaviour
         {
             _Jump();
         }
-        _ChangeShape(_triangleSprite, _triangleCollider);
+        _ChangeShape(_triangleSprite, _triangleCollider, _triangleColor);
     }
 
-    private void _ChangeShape(Sprite sprite, Collider2D collider)
+    private void _ChangeShape(Sprite sprite, Collider2D collider, Color color)
     {
         if (_currentSprite != sprite)
         {
@@ -69,6 +73,12 @@ public class Player : MonoBehaviour
             _currentCollider.enabled = false;
             collider.enabled = true;
             _currentCollider = collider;
+        }
+
+        if (_currentColor != color)
+        {
+            _spriteRenderer.color = color;
+            _currentColor = color;
         }
     }
 
